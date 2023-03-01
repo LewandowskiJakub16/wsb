@@ -1,0 +1,9 @@
+    1  git clone https://github.com/LewandowskiJakub16/wsb.git
+    2  git.clone https://github.com/LewandowskiJakub16/wsb.git
+    3  git clone https://github.com/LewandowskiJakub16/wsb.git
+    4  alias c=clear
+    5  alias c=clear
+    6  clear
+    7  history > filehistory
+    8  cd wsb
+    9  history > filehistory
