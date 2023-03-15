@@ -10,7 +10,7 @@
    <h4>Uzytkownicy z bazy danych</h4> 
    <?php
    require_once('../skrypty/connect.php');
-   $sql = "SELECT * FROM `k15`;";
+   $sql = "SELECT * FROM k15;";
 
    $result = $conn->query(query: $sql);
    //$user = $result->fetch_assoc();
