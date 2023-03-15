@@ -11,7 +11,9 @@
     <h4>Uzytkownicy</h4>    
     <?php   
     require_once("../skrypty/connect.php");
-    $sql = "SELECT * FROM users INNER JOIN cities ON users.city_id = cities.id;";
+    $sql = "SELECT * FROM users INNER JOIN cities ON users.city_id = cities.id
+    INNER JOIN states ON cities.state_id = states.id
+    INNER JOIN countries ON states.country_id = countries.id";
 
     $result = $conn->query(query: $sql);
     echo <<< USERSTABLE
@@ -21,6 +23,8 @@
             <th>Nazwisko</th>
             <th>Data urodzenia</th>
             <th>Miasto</th>
+            <th>Wojewodztwo</th>
+            <th>Panstwo</th>
         </tr>
 USERSTABLE;
 
@@ -31,6 +35,8 @@ USERSTABLE;
             <td>$user[lastname]</td>
             <td>$user[birthday]</td>
             <td>$user[city]</td>
+            <td>$user[state]</td>
+            <td>$user[country]</td>
         </tr>
 USERSTABLE;
     }
