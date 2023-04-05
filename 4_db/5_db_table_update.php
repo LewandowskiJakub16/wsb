@@ -22,7 +22,7 @@
     INNER JOIN states ON cities.state_id = states.id
     INNER JOIN countries ON states.country_id = countries.id";
 
-    $result = $conn->query(query: $sql);
+    $result = $conn->query( $sql);
     echo <<< USERSTABLE
     <table>
         <tr>
@@ -80,20 +80,45 @@ USERSTABLE;
             }
         echo <<< ADDUSERFORM
             </select><br><br>
-            <input type="date" name="birthday"> Data urodzenia <br><br>
-            <input type="submit" value="Dodaj użytkownika"><br><br>
+            <input type="date" name="birthday"> Data urodzenia<br><br>
+            <input type="checkbox" name="term" checked> Regulamin<br><br>
+            <input type="submit" value="Dodaj użytkownika">
             </form>
 
     ADDUSERFORM;
         }else{
-           echo '<hr><a href="./4_db_table_add.php?addUserForm=1">Dodawanie użytkownika</a>';
+           echo '<hr><a href="./5_db_table_update.php?addUserForm=1">Dodawanie użytkownika</a>';
         }
 
         if(isset($_GET["updateUserId"])){
-            echo <<< UPDATEUSERFORM
-            <h4>Aktualizacja użytkownika</h4>
-    UPDATEUSERFORM;
+            $sql = "SELECT * FROM users WHERE id = $_GET[updateUserId]";
+            $result = $conn->query($sql);
+            $updateUser = $result->fetch_assoc();
+            $_SESSION["updateUserId"] = $_GET["updateUserId"];
+                echo <<< UPDATEUSERFORM
+                    <hr><h4>Aktualizacja użytkownika</h4>
+                    <form action="../scripts/update_user.php" method="post">
+                    <input type="text" name="firstname" placeholder ="Podaj imię" value="$updateUser[firstname]"autofocus><br><br>
+                    <input type="text" name="lastname" placeholder ="Podaj nazwisko" value="$updateUser[lastname]"><br><br>
+                    <select name="city_id">
+                UPDATEUSERFORM;
+                    $sql = "SELECT * FROM cities";
+                    $result = $conn->query($sql);
+                    while($city = $result->fetch_assoc()){
+                        if($updateUser["city_id"] == $city["id"]){
+                            echo "<option value=\"$city[id]\"selected>$city[city]</option>";
+                        }else{
+                            echo "<option value=\"$city[id]\">$city[city]</option>";
+                        }   
+                    }
+                echo <<< UPDATEUSERFORM
+                    </select><br><br>
+                    <input type="date" name="birthday" value="$updateUser[birthday]"> Data urodzenia <br><br>
+                    <input type="submit" value="Aktualizuj użytkownika">
+                    </form>
+        UPDATEUSERFORM;
         }
+        $conn->close();
     ?>
      
 </body>
