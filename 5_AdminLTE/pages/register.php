@@ -34,7 +34,7 @@
         </div>
 
         <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Podaj nazwisko" name="secondName">
+          <input type="text" class="form-control" placeholder="Podaj nazwisko" name="lastName">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
@@ -43,7 +43,7 @@
         </div>
 
         <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Podaj Email" name="email1">
+          <input type="email" class="form-control" placeholder="Podaj email" name="email1">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -52,7 +52,7 @@
         </div>
 
         <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Powtórz Email" name="email2">
+          <input type="email" class="form-control" placeholder="Powtórz email" name="email2">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -61,7 +61,7 @@
         </div>
 
         <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Hasło" name="pass1">
+          <input type="password" class="form-control" placeholder="Podaj hasło" name="pass1">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
