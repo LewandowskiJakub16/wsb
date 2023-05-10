@@ -18,23 +18,28 @@
     $error = 0;
 
     if (!isset($_POST["terms"])){
-		$_SESSION["error"] = "Zaznacz regulamin!";
 		$error = 1;
+		$_SESSION["error"] = "Zaznacz regulamin!";
 	}
 
     if (!isset($_POST["gender"])){
-		$_SESSION["error"] = "Zaznacz płeć!";
 		$error = 1;
+		$_SESSION["error"] = "Zaznacz płeć!";
 	}
 
     if ($_POST["pass1"] != $_POST["pass2"]){
-		$_SESSION["error"] = "Hasła są różne!";
 		$error = 1;
+		$_SESSION["error"] = "Hasła są różne!";
 	}
 
     if ($_POST["email1"] != $_POST["email2"]){
-		$_SESSION["error"] = "Adresy poczty elektronicznej są różne!";
 		$error = 1;
+		$_SESSION["error"] = "Adresy poczty elektronicznej są różne!";
+	}
+
+	if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s])\S{8,}$/', $_POST["pass1"])) {
+		$error = 1;
+		$_SESSION["error"] = "Hasło nie spełnia wymagań!";
 	}
 
 	if ($error != 0){
