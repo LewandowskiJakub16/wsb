@@ -1,14 +1,34 @@
 <?php
-    /*
-    echo "<pre>";
+if($_SERVER["REQUEST_METOD"] == "POST")
+{
+	
+    /*echo "<pre>";
      print_r($_POST);
     echo "</pre>";
-    */
+	*/
+    
+
+	$required_fields = ["firstname", "lastname", "email1", "email2", "pass1", "pass2", "birthday", "city_id", "gender"];
+
+	/*foreach($required_fields as $key => $value){
+		echo "$key: $value<br>";
+	}
+	exit();
+	*/
 
     session_start();
 
-    foreach($_POST as $key => $value){
+    /*foreach($_POST as $key => $value){
         if(empty($value)){
+            $_SESSION["error"] = "Wypełnij wszystkie pola!";
+            echo "<script>history.back();</script>";
+            exit();
+        }
+    }
+	*/
+
+	foreach($required_fields as $value){
+        if(empty($_POST[$value])){
             $_SESSION["error"] = "Wypełnij wszystkie pola!";
             echo "<script>history.back();</script>";
             exit();
@@ -72,6 +92,6 @@
 	}else{
 		$_SESSION["error"] = "Nie udało się dodać użytkownika";
 	}
-
-    header("location: ../pages/register.php");
+}
+header("location: ../pages/register.php");   
 ?>
