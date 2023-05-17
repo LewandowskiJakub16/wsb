@@ -1,6 +1,17 @@
 <?php
-if($_SERVER["REQUEST_METOD"] == "POST")
-{
+function sanitizeInput(&$input){
+	//$input = htmlentities(stripslashes(trim($input)));
+	$input = trim($input);
+	$input = stripslashes($input);
+	$input = htmlentities($input);
+	return $input;
+}
+
+//$_POST["firstName"] = sanitizeInput($_POST["firstName"]);
+//echo $_POST["firstName"]." ==> ".sanitizeInput($_POST["firstName"]). ", ilość znaków:".strlen($_POST["firstName"]);
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST"){
 	
     /*echo "<pre>";
      print_r($_POST);
@@ -8,7 +19,7 @@ if($_SERVER["REQUEST_METOD"] == "POST")
 	*/
     
 
-	$required_fields = ["firstname", "lastname", "email1", "email2", "pass1", "pass2", "birthday", "city_id", "gender"];
+	$required_fields = ["firstName", "lastName", "email1", "email2", "pass1", "pass2", "birthday", "city_id", "gender"];
 
 	/*foreach($required_fields as $key => $value){
 		echo "$key: $value<br>";
@@ -27,42 +38,50 @@ if($_SERVER["REQUEST_METOD"] == "POST")
     }
 	*/
 
-	foreach($required_fields as $value){
-        if(empty($_POST[$value])){
-            $_SESSION["error"] = "Wypełnij wszystkie pola!";
-            echo "<script>history.back();</script>";
-            exit();
-        }
-    }
+	$errors = [];
 
-    $error = 0;
-
-    if (!isset($_POST["terms"])){
-		$error = 1;
-		$_SESSION["error"] = "Zaznacz regulamin!";
+	foreach ($required_fields as $value){
+		if (empty($_POST[$value])){
+			//$_SESSION["error"] = "Wypełnij wszystkie pola!";
+			$errors[] = "Pole <b>$value</b> jest wymagane";
+			//echo "<script>history.back();</script>";
+			//exit();
+		}
+	}
+	
+	if (!empty($errors)){
+		//print_r($errors);
+		$_SESSION["error"] = implode("<br>", $errors);
+		echo "<script>history.back();</script>";
+		exit();
 	}
 
-    if (!isset($_POST["gender"])){
-		$error = 1;
-		$_SESSION["error"] = "Zaznacz płeć!";
+    if ($_POST["email1"] != $_POST["email2"])
+		$errors[] = "Adresy email są różne!";
+
+	if ($_POST["additional_email1"] != $_POST["additional_email2"]){
+		$errors[] = "Adresy dodatkowe email są różne!";
+	}else{
+		if (empty($_POST["additional_email1"]))
+			$_POST["additional_email1"] = NULL;
 	}
 
-    if ($_POST["pass1"] != $_POST["pass2"]){
-		$error = 1;
-		$_SESSION["error"] = "Hasła są różne!";
+	if ($_POST["pass1"] != $_POST["pass2"])
+	{
+		$errors[] = "Hasła są różne!";
+	}else{
+		if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s])\S{8,}$/', $_POST["pass1"]))
+		$errors[] = "Hasło nie spełnia wymagań!";
 	}
 
-    if ($_POST["email1"] != $_POST["email2"]){
-		$error = 1;
-		$_SESSION["error"] = "Adresy poczty elektronicznej są różne!";
-	}
+	if (!isset($_POST["gender"]))
+	$errors[] = "Zaznacz płeć!";
 
-	if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\d\s])\S{8,}$/', $_POST["pass1"])) {
-		$error = 1;
-		$_SESSION["error"] = "Hasło nie spełnia wymagań!";
-	}
-
-	if ($error != 0){
+	if (!isset($_POST["terms"]))
+	$errors[] = "Zaznacz regulamin!";
+	
+	if (empty($errors)){
+		$_SESSION["error"] = implode("<br>", $errors);
 		echo "<script>history.back();</script>";
 		exit();
 	}
@@ -79,12 +98,17 @@ if($_SERVER["REQUEST_METOD"] == "POST")
 		exit();
 	}
 
-    $stmt = $conn->prepare("INSERT INTO `users` (`email`, `city_id`, `firstName`, `lastName`, `birthday`, `gender`, `avatar`, `password`, `created_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, current_timestamp());");
+	foreach($_POST as $key => $value){
+		if(!$_POST["pass1"] && !$_POST["pass2"])
+		sanitizeInput($_POST["$key"]);
+	}
+
+    $stmt = $conn->prepare("INSERT INTO `users` (`email`, `additional_email`, `city_id`, `firstName`, `lastName`, `birthday`, `gender`, `avatar`, `password`, `created_at`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp());");
     $pass = password_hash('$_POST[pass1]', PASSWORD_ARGON2ID);
 
     $avatar = ($_POST["gender"] == 'w') ? './jpg/woman.png' : './jpg/man.png';
 
-    $stmt->bind_param('sissssss', $_POST["email1"], $_POST["city_id"], $_POST["firstName"], $_POST["lastName"], $_POST["birthday"], $_POST["gender"], $avatar, $pass);
+    $stmt->bind_param('ssissssss', $_POST["email1"], $_POST["additional_email1"], $_POST["city_id"], $_POST["firstName"], $_POST["lastName"], $_POST["birthday"], $_POST["gender"], $avatar, $pass);
     $stmt->execute();
 
     if ($stmt->affected_rows == 1){
